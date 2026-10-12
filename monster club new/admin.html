@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Club - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <!-- Firebase Compat SDKs (For local file:// support) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+</head>
+<body>
+
+    <!-- Loading Overlay until Auth is checked -->
+    <div id="auth-loader" class="loader-overlay">
+        <h2>Verifying Access...</h2>
+    </div>
+
+    <!-- Admin Login UI -->
+    <div id="admin-login-container" class="login-container" style="display: none;">
+        <div class="login-box">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">🔒</div>
+            <h2>Admin Login</h2>
+            <p style="color: #888; font-size: 0.85rem; margin-bottom: 18px;">Enter PIN to access Admin Dashboard</p>
+            <form id="admin-login-form">
+                <div style="position: relative; margin-bottom: 15px;">
+                    <input type="password" id="admin-pin-input" placeholder="Enter PIN" maxlength="10" autocomplete="off" required style="letter-spacing: 6px; text-align: center; font-size: 1.25rem; padding: 12px; width: 100%; border-radius: 6px; margin-bottom: 0;">
+                    <span id="toggle-pin-btn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; font-size: 1.1rem; user-select: none;" title="Toggle PIN visibility">👁️</span>
+                </div>
+                <button type="submit" class="save-btn" style="width: 100%; padding: 12px; font-size: 1rem; font-weight: 600; cursor: pointer;">Login</button>
+            </form>
+            <p id="admin-login-error" style="color: #ff4d4f; margin-top: 12px; font-weight: 500; display: none;"></p>
+            <a href="index.html" style="color: #bbb; display: block; margin-top: 15px; text-decoration: none; font-size: 0.9rem;">&larr; Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Admin Layout -->
+    <div class="admin-container" style="display: none;" id="admin-ui">
+        
+        <!-- Mobile Topbar -->
+        <header class="mobile-topbar">
+            <button id="sidebar-toggle-btn" class="hamburger-btn" aria-label="Toggle Navigation">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <div class="mobile-brand">
+                <span class="brand-title">MONSTER CLUB</span>
+                <span class="brand-badge">ADMIN</span>
+            </div>
+            <button id="mobile-logout-btn" class="mobile-logout-btn" title="Logout">Logout</button>
+        </header>
+
+        <!-- Sidebar Overlay (for Mobile) -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div>
+                    <h2>MONSTER CLUB</h2>
+                    <p>Admin Dashboard</p>
+                </div>
+                <button id="sidebar-close-btn" class="sidebar-close-btn" aria-label="Close Sidebar">&times;</button>
+            </div>
+            <ul class="nav-links">
+                <li class="menu-label">DASHBOARD</li>
+                <li class="active" onclick="switchTab('overview', this)">Overview</li>
+                
+                <li class="menu-label">ORDERS</li>
+                <li onclick="switchTab('bookings', this)">Bookings (Orders)</li>
+                <li onclick="switchTab('confirmed-bookings', this)">Confirmed Orders</li>
+                
+                <li class="menu-label">CONTENT</li>
+                <li onclick="switchTab('packages', this)">Manage Packages</li>
+                <li onclick="switchTab('photo-gallery', this)">Photo Gallery</li>
+                <li onclick="switchTab('video-gallery', this)">Video Gallery</li>
+
+                <li class="menu-label">USERS</li>
+                <li onclick="switchTab('users', this)">Registered Users</li>
+            </ul>
+            <div class="sidebar-footer">
+                <p id="admin-email"></p>
+                <button id="logout-btn">Logout</button>
+                <p style="font-size: 0.72rem; color: #555; text-align: center; margin-top: 14px; letter-spacing: 0.5px;">Developed with <span style="color: #D4AF37; font-weight: 600;">SoulSync</span></p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Overview Tab -->
+            <section id="tab-overview" class="tab-content active">
+                <div class="header">
+                    <h1>Dashboard Overview</h1>
+                    <button onclick="loadOverview()">Refresh Data</button>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>Total Bookings</h3>
+                        <div class="stat-value" id="stat-bookings">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Registered Users</h3>
+                        <div class="stat-value" id="stat-users">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Packages</h3>
+                        <div class="stat-value" id="stat-packages">0</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Orders Trend</h3>
+                            <select id="chart-time-filter" onchange="updateOrdersChart()">
+                                <option value="day">By Day (Last 7 Days)</option>
+                                <option value="month">By Month (This Year)</option>
+                                <option value="year">By Year</option>
+                            </select>
+                        </div>
+                        <canvas id="ordersChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Gallery Content Ratio</h3>
+                        </div>
+                        <canvas id="galleryPieChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Tab -->
+            <section id="tab-users" class="tab-content">
+                <div class="header">
+                    <h1>Registered Users</h1>
+                    <button onclick="loadUsers()">Refresh</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Email</th>
+                                <th>Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Bookings Tab -->
+            <section id="tab-bookings" class="tab-content">
+                <div class="header">
+                    <h1>Recent Bookings</h1>
+                    <button onclick="loadBookings()">Refresh</button>
+                </div>
+                <div class="table-container">
+                    <table id="bookings-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Event Type</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Confirmed Bookings Tab -->
+            <section id="tab-confirmed-bookings" class="tab-content">
+                <div class="header">
+                    <h1>Confirmed Orders</h1>
+                    <button onclick="loadBookings()">Refresh</button>
+                </div>
+                <div class="table-container">
+                    <table id="confirmed-bookings-table">
+                        <thead>
+                            <tr>
+                                <th>Ordered Date</th>
+                                <th>Confirmed Date</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Event Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="confirmed-bookings-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Packages Tab -->
+            <section id="tab-packages" class="tab-content">
+                <div class="header">
+                    <h1>Manage Packages</h1>
+                    <button onclick="showAddPackageModal()">+ Add New Package</button>
+                </div>
+                
+                <div class="packages-grid" id="packages-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Photo Gallery Tab -->
+            <section id="tab-photo-gallery" class="tab-content">
+                <div class="header">
+                    <h1>Photography Gallery</h1>
+                    <button onclick="showAddPhotoModal()">+ Add Photo</button>
+                </div>
+                <div class="packages-grid" id="photos-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Video Gallery Tab -->
+            <section id="tab-video-gallery" class="tab-content">
+                <div class="header">
+                    <h1>Videography Gallery</h1>
+                    <button onclick="showAddVideoModal()">+ Add Video</button>
+                </div>
+                <div class="packages-grid" id="videos-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Add Package Modal -->
+    <div id="package-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePackageModal()">&times;</span>
+            <h2 id="modal-title">Add Package</h2>
+            <form id="package-form">
+                <input type="hidden" id="pkg-id">
+                
+                <label>Category</label>
+                <select id="pkg-category" required onchange="togglePkgSampleInput()">
+                    <option value="Photography">Photography</option>
+                    <option value="Videography">Videography</option>
+                </select>
+
+                <label>Title</label>
+                <input type="text" id="pkg-title" placeholder="e.g. Cinematic Wedding" required>
+
+                <label>Price</label>
+                <input type="text" id="pkg-price" placeholder="e.g. Rs. 50,000" required>
+
+                <label>Description</label>
+                <textarea id="pkg-desc" rows="2" placeholder="Brief description..." required></textarea>
+                
+                <label>Details (Comma separated features)</label>
+                <textarea id="pkg-details" rows="3" placeholder="e.g. Full day coverage, 100 printed photos, Album..." required></textarea>
+
+                <div id="pkg-sample-photo-container">
+                    <label>Sample Photo</label>
+                    <input type="file" id="pkg-sample-photo" accept="image/*">
+                </div>
+
+                <div id="pkg-sample-video-container" style="display:none;">
+                    <label>Sample Video (YouTube URL)</label>
+                    <input type="url" id="pkg-sample-video" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+
+                <button type="submit" class="save-btn" id="pkg-save-btn">Save Package</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Photo Gallery Modal -->
+    <div id="photo-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePhotoModal()">&times;</span>
+            <h2 id="photo-modal-title">Add Photo</h2>
+            <form id="photo-form">
+                <input type="hidden" id="photo-id">
+                <input type="hidden" id="photo-existing-url">
+
+                <label>Photo</label>
+                <input type="file" id="photo-file" accept="image/*">
+                
+                <label>Description</label>
+                <input type="text" id="photo-desc" placeholder="e.g. Pre-shoot in Kandy" required>
+
+                <button type="submit" class="save-btn" id="photo-save-btn">Upload Photo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Video Gallery Modal -->
+    <div id="video-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeVideoModal()">&times;</span>
+            <h2 id="video-modal-title">Add Video</h2>
+            <form id="video-form">
+                <input type="hidden" id="video-id">
+
+                <label>YouTube URL</label>
+                <input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=..." required>
+                
+                <label>Description</label>
+                <input type="text" id="video-desc" placeholder="e.g. Cinematic Wedding Highlights" required>
+
+                <button type="submit" class="save-btn">Save Video</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

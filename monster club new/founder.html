@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nadith - Founder of Monster Club</title>
+    <!-- Luxury Fonts from Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <!-- GSAP Core and ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+    
+    <!-- Top Navigation -->
+    <header class="navbar">
+        <div class="logo"><a href="index.html" style="color:white; text-decoration:none;">MONSTER CLUB</a></div>
+        
+        <!-- Hamburger Icon for Mobile -->
+        <div class="hamburger" id="hamburger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+        
+        <!-- Nav Menu -->
+        <div class="nav-menu" id="nav-menu">
+            <nav class="nav-links">
+                <a href="index.html#about" class="nav-link">About Us</a>
+                <a href="founder.html" class="nav-link" style="color: #d4af37;">The Founder</a>
+                <a href="index.html#photography" class="nav-link">Photography</a>
+                <a href="index.html#videography" class="nav-link">Videography</a>
+                <a href="index.html#contact" class="nav-link">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Founder Background Image (Used for both PC and Mobile) -->
+    <div id="bg-image-founder"></div>
+
+    <!-- Overlay to keep text readable over background -->
+    <div class="video-overlay" style="background: rgba(0, 0, 0, 0.65);"></div>
+
+    <div id="content">
+        <!-- Hero Section -->
+        <section class="step hero-section" id="hero">
+            <div class="hero-content">
+                <h1>NADITH</h1>
+                <p class="desc">
+                    Visionary Founder, Lead Photographer & Cinematographer
+                </p>
+                <div class="luxury-details">
+                    <span>Master of Light</span> &nbsp;|&nbsp; <span>Creative Director</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Details Section -->
+        <section class="step">
+            <div class="founder-profile">
+                <h2>The Man Behind The Lens</h2>
+                <p class="desc">
+                    Nadith is the creative force and visionary founder of Monster Club. With years of deep passion for visual storytelling, he has mastered the art of capturing raw emotion and breathtaking cinematic visuals. Whether it's a high-end commercial shoot or a deeply personal wedding day, Nadith's unparalleled dedication ensures every frame tells a perfect story.
+                </p>
+            </div>
+        </section>
+
+        <!-- Expertise Boxes -->
+        <section class="step">
+            <div class="boxes-container">
+                <div class="box">
+                    <h3>Creative Vision</h3>
+                    <p>A unique artistic eye that transforms ordinary moments into cinematic masterpieces, giving your memories a premium, luxury feel.</p>
+                </div>
+                <div class="box">
+                    <h3>Expertise</h3>
+                    <p>Specialized in both high-end portrait photography and dynamic video production, ensuring seamless coverage for any event.</p>
+                </div>
+                <div class="box">
+                    <h3>Commitment</h3>
+                    <p>Driven by perfectionism. Nadith works closely with every client to understand their vision and exceed their expectations.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 Monster Club. All rights reserved.</p>
+            <p>Designed with passion & excellence.</p>
+            <p class="dev-credit">Developed with <span class="dev-highlight">SoulSync</span></p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/animation.js"></script>
+    <script>
+        // Hamburger Menu Logic (Simplified for Founder page)
+        document.addEventListener("DOMContentLoaded", () => {
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            if (hamburger && navMenu) {
+                hamburger.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                    hamburger.classList.toggle('toggle');
+                });
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        navMenu.classList.toggle('active');
+                        hamburger.classList.toggle('toggle');
+                    });
+                });
+            }
+        });
+        
+        // Custom animation for founder background
+        gsap.to("#bg-image-founder", {
+            scale: 1.1,      
+            yPercent: 5,    
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#content",
+                start: "top top",
+                end: "bottom bottom", 
+                scrub: 1.5 
+            }
+        });
+    </script>
+</body>
+</html>

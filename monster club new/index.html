@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Club</title>
+    <!-- Luxury Fonts from Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <!-- GSAP Core and ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+</head>
+<body>
+    
+    <!-- Top Navigation -->
+    <header class="navbar">
+        <div class="logo">MONSTER CLUB</div>
+        
+        <!-- Hamburger Icon for Mobile -->
+        <div class="hamburger" id="hamburger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+        
+        <!-- Nav Menu (Links & Login) -->
+        <div class="nav-menu" id="nav-menu">
+            <nav class="nav-links">
+                <a href="#about" class="nav-link">About Us</a>
+                <a href="founder.html" class="nav-link">The Founder</a>
+                <a href="#photography" class="nav-link">Photography</a>
+                <a href="#videography" class="nav-link">Videography</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+
+            <button id="my-orders-btn" class="nav-btn" style="display:none; background: transparent; color: #D4AF37; border: 1px solid #D4AF37; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-right: 15px;" onclick="openMyOrdersModal()">
+                Orders <span id="my-orders-count" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; margin-left: 5px;">0</span>
+            </button>
+
+            <button id="nav-auth-btn" class="google-login">
+                Login
+            </button>
+        </div>
+    </header>
+
+    <!-- Client Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-auth-modal">&times;</span>
+            <h2 id="auth-title">Client Login</h2>
+            
+            <form id="auth-form" class="auth-form">
+                <input type="email" id="auth-email" placeholder="Email Address" required>
+                <input type="password" id="auth-password" placeholder="Password" required>
+                <button type="submit" id="auth-submit-btn" class="auth-btn">Login</button>
+            </form>
+            
+            <p style="text-align:center; margin: 15px 0; color: #666;">OR</p>
+            
+            <button id="google-auth-btn" class="google-auth-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Continue with Google
+            </button>
+            
+            <p class="auth-switch">Don't have an account? <span id="switch-auth-mode">Register here</span></p>
+        </div>
+    </div>
+
+    <!-- Mobile Background Image -->
+    <div id="bg-image-mobile"></div>
+
+    <!-- PC & Tablet Background Image -->
+    <div id="bg-image-pc"></div>
+
+    <!-- Overlay to keep text readable over background -->
+    <div class="video-overlay"></div>
+
+    <div id="content">
+        <!-- Hero Section -->
+        <section class="step hero-section" id="hero">
+            <div class="hero-content">
+                <h1>Monster Club</h1>
+                <p class="desc">
+                    Capturing Life's<br>
+                    Most Precious Moments<br>
+                    With Cinematic Perfection.
+                </p>
+                <div class="luxury-details">
+                    <span>Elite Photography</span> &nbsp;|&nbsp; <span>Premium Videography</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Us Section -->
+        <section class="step" id="about">
+            <h1>What is Monster Club?</h1>
+            <p class="desc">We are a premium photography and videography agency dedicated to turning your most precious moments into timeless memories. With a passion for visual storytelling, we bring a cinematic touch to everything we capture.</p>
+        </section>
+
+        <!-- Photography Section -->
+        <section class="step" id="photography">
+            <h1>Photography</h1>
+            <div class="boxes-container" id="photography-container">
+                <div class="box">
+                    <h3>Weddings</h3>
+                    <p>Documenting the magic and genuine emotions of your special day.</p>
+                </div>
+                <div class="box">
+                    <h3>Portraits</h3>
+                    <p>Professional modeling, fashion, and stunning personal portraits.</p>
+                </div>
+                <div class="box">
+                    <h3>Events</h3>
+                    <p>High-quality coverage for corporate gatherings and private parties.</p>
+                </div>
+            </div>
+
+            <button class="gallery-toggle-btn" onclick="toggleGallery('client-photo-gallery', this)">View Photo Gallery ▼</button>
+            <div class="client-gallery-grid" id="client-photo-gallery" style="display: none;">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+        
+        <!-- Videography Section -->
+        <section class="step" id="videography">
+            <h1>Videography</h1>
+            <div class="boxes-container" id="videography-container">
+                <div class="box">
+                    <h3>Cinematic Films</h3>
+                    <p>Beautifully crafted short films and wedding highlight videos.</p>
+                </div>
+                <div class="box">
+                    <h3>Commercials</h3>
+                    <p>Brand promotions and high-end commercial video shoots.</p>
+                </div>
+                <div class="box">
+                    <h3>Music Videos</h3>
+                    <p>Creative, dynamic, and visually stunning music video production.</p>
+                </div>
+            </div>
+
+            <button class="gallery-toggle-btn" onclick="toggleGallery('client-video-gallery', this)">View Video Gallery ▼</button>
+            <div class="client-gallery-grid" id="client-video-gallery" style="display: none;">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Packages Section (NEW) -->
+        <section class="step" id="packages-section">
+            <h1>Our Packages</h1>
+            <p class="desc">Choose the perfect package for your special moment.</p>
+            <div class="boxes-container" id="packages-container">
+                <!-- Populated by JS with Admin Packages -->
+            </div>
+        </section>
+        
+        <!-- Book Session (Contact) Section -->
+        <section class="step" id="contact">
+            <h1>Book Your Session</h1>
+            <p class="desc">Ready to make magic? Fill out the form below or contact us via WhatsApp.</p>
+            
+            <form id="booking-form" class="booking-form">
+                <input type="text" id="b-name" placeholder="Your Name" required>
+                <input type="tel" id="b-phone" placeholder="Phone Number" required>
+                <select id="b-category" required onchange="updateSubCategories()">
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Videography">Videography</option>
+                    <option value="Editing">Editing</option>
+                </select>
+                <select id="b-type" required onchange="checkCustomSubCategory()">
+                    <option value="" disabled selected>Select Type</option>
+                </select>
+                <input type="text" id="b-custom-type" placeholder="Please specify..." style="display:none;">
+                <button type="submit" id="submit-booking">Submit Request</button>
+            </form>
+
+            <p style="margin: 20px 0; color: #aaa;">OR</p>
+            <button id="whatsapp-btn" onclick="orderViaWhatsApp()">Order via WhatsApp</button>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 Monster Club. All rights reserved.</p>
+            <p>Designed with passion & excellence.</p>
+            <p class="dev-credit">Developed with <span class="dev-highlight">SoulSync</span></p>
+        </footer>
+    </div>
+
+    <!-- My Orders Modal -->
+    <div id="my-orders-modal" class="lightbox-overlay" onclick="closeMyOrdersModal(event)">
+        <div class="pkg-modal-content" onclick="event.stopPropagation()" style="max-width: 600px;">
+            <span class="lightbox-close" onclick="closeMyOrdersModal(event)" style="top: 10px; right: 20px;">&times;</span>
+            <h2 style="color: #D4AF37; margin-bottom: 20px; text-align: center; text-transform: uppercase;">My Orders</h2>
+            <div id="my-orders-list" style="color: #fff; max-height: 50vh; overflow-y: auto; text-align: left; padding: 0 10px;">
+                <!-- Content injected via JS -->
+            </div>
+            <div style="margin-top: 20px; text-align: center; color: #aaa; font-size: 0.9rem; border-top: 1px solid #333; padding-top: 15px;">
+                For any inquiries or to make changes to your orders, please contact us on WhatsApp at<br>
+                <a href="https://wa.me/94741976406" target="_blank" style="color: #2ed573; font-size: 1.2rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; text-decoration: none; font-weight: bold; background: rgba(46, 213, 115, 0.1); padding: 8px 20px; border-radius: 25px; transition: all 0.3s ease;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                    074 197 6406
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Package Details Modal -->
+    <div id="pkg-view-modal" class="lightbox-overlay" onclick="closePkgModal(event)">
+        <div class="pkg-modal-content" onclick="event.stopPropagation()">
+            <span class="lightbox-close" onclick="closePkgModal(event)" style="top: 10px; right: 20px;">&times;</span>
+            <div id="pkg-view-body">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox for Image/Video Gallery -->
+    <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+        <div id="lightbox-video-container" class="lightbox-content" style="display:none; width:100%; max-width:800px; background:#000;"></div>
+        <div id="lightbox-caption"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/animation.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
